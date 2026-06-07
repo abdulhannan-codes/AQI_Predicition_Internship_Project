@@ -2,6 +2,10 @@
 backfill.py
 Run the feature pipeline over a long past window to build the training dataset.
 """
+from env_loader import load_env
+
+load_env()
+
 import datetime as dt
 
 import feature_pipeline as fp

@@ -4,6 +4,10 @@ Uses FastAPI when API_URL is set; otherwise calls services/ directly.
 
 Run:  streamlit run app.py
 """
+from env_loader import load_env
+
+load_env()
+
 import os
 
 import matplotlib.pyplot as plt

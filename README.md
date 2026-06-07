@@ -108,6 +108,24 @@ OpenWeather + Open-Meteo  →  feature_pipeline.py
 
 ## Deploy
 
+**Full step-by-step guide:** see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+Quick summary:
+1. Push to GitHub: `.\scripts\push_github.ps1` (after `gh auth login`)
+2. Fill `.env` with OpenWeather + Hopsworks keys
+3. Run `python backfill.py 365` and `python train.py` with `FEATURE_STORE=hopsworks`
+4. Add GitHub secrets and trigger Actions workflows
+5. Deploy FastAPI on Render, then Streamlit Cloud with `API_URL`
+
+**Verify locally:**
+```powershell
+.\scripts\verify_checklist.ps1 -ApiUrl "http://localhost:8000"
+```
+
+**Public URLs** (fill in after deploy):
+- API: `https://YOUR-APP.onrender.com`
+- Dashboard: `https://YOUR-APP.streamlit.app`
+
 ### FastAPI on Render
 1. Push repo to GitHub
 2. Create Web Service from `render.yaml`

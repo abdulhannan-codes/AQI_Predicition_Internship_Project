@@ -8,6 +8,10 @@ Requirement mapping (Pearls spec -> code):
   - "Derived features like AQI change rate"                    -> add_derived_features()
   - "Store processed features in Feature Store"                -> save_features() / load_features()
 """
+from env_loader import load_env
+
+load_env()
+
 import datetime as dt
 import os
 import pathlib

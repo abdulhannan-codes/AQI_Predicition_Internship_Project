@@ -3,6 +3,10 @@ FastAPI backend — serves AQI predictions (#7, #29).
 
 Run: uvicorn api:app --reload --port 8000
 """
+from env_loader import load_env
+
+load_env()
+
 import os
 
 from fastapi import FastAPI, HTTPException

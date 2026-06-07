@@ -58,6 +58,10 @@ class HopsworksStore:
         if "time" not in out.columns:
             raise ValueError("Feature dataframe must include 'time' column")
         out["time"] = pd.to_datetime(out["time"])
+        cols = ["time"] + [c for c in FEATURE_COLS if c in out.columns]
+        out = out[cols].dropna().reset_index(drop=True)
+        if out.empty:
+            raise ValueError("No complete feature rows to insert into Hopsworks")
         fg.insert(out, write_options={"start_offline_backfill": True})
         # Also mirror to local parquet for offline fallback
         local = pathlib.Path(__file__).resolve().parent.parent / "data" / name

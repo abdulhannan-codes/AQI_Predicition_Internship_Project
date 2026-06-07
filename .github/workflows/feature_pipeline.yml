@@ -18,7 +18,14 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-ci.txt
+      - name: Check required secrets
+        run: |
+          test -n "$HOPSWORKS_API_KEY" || { echo "Missing HOPSWORKS_API_KEY secret"; exit 1; }
+          test -n "$HOPSWORKS_PROJECT" || { echo "Missing HOPSWORKS_PROJECT secret"; exit 1; }
+        env:
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+          HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
       - name: Fetch + compute features
         env:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}

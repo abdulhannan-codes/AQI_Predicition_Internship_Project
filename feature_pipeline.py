@@ -311,6 +311,9 @@ if __name__ == "__main__":
     end = dt.date.today()
     start = end - dt.timedelta(days=7)
     df = build_features(start, end)
+    from config import FEATURE_COLS
+    cols = [c for c in FEATURE_COLS if c in df.columns]
+    df = df.dropna(subset=cols).reset_index(drop=True)
     p = save_features(df)
     print(f"Wrote {len(df)} rows -> {p}")
     print(f"sources: weather={LAST_DATA_SOURCES['weather']}, pollutants={LAST_DATA_SOURCES['pollutants']}")

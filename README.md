@@ -4,9 +4,9 @@ Predict Lahore's Air Quality Index (AQI) for the next **3 days** (24h / 48h / 72
 using an end-to-end ML pipeline with Hopsworks Feature Store, FastAPI backend,
 and Streamlit dashboard.
 
----
+**Live dashboard:** https://aqipredicitioninternshipproject.streamlit.app/
 
-## Quick start (local)
+---
 
 ```bash
 python -m pip install -r requirements-full.txt
@@ -38,7 +38,7 @@ OpenWeather + Open-Meteo  →  feature_pipeline.py
 
 **CI/CD:** GitHub Actions — hourly features, daily retraining.
 
-**Deploy:** Render (FastAPI) + Streamlit Community Cloud (dashboard with `API_URL`).
+**Deploy:** Streamlit Community Cloud (live) + FastAPI locally (`uvicorn api:app --port 8000`).
 
 ---
 
@@ -122,20 +122,19 @@ Quick summary:
 .\scripts\verify_checklist.ps1 -ApiUrl "http://localhost:8000"
 ```
 
-**Public URLs** (fill in after deploy):
-- API: `https://YOUR-APP.onrender.com`
-- Dashboard: `https://YOUR-APP.streamlit.app`
+**Public URLs:**
+- **Dashboard:** https://aqipredicitioninternshipproject.streamlit.app/
+- **API (local demo):** `uvicorn api:app --port 8000` → http://localhost:8000/forecast
 
-### Local verification status (last run)
+### Verification status
 
 | Check | Status |
 |---|---|
-| FastAPI `/forecast` | Pass (local) |
+| Streamlit dashboard (public) | Pass |
+| GitHub Actions (feature + train) | Pass |
+| Hopsworks Feature Store | Pass |
+| FastAPI `/forecast` | Pass (run locally for demo) |
 | SHAP explainability | Pass |
-| Feature pipeline | Pass (`weather=openmeteo` until OpenWeather key set) |
-| Hopsworks registry | Pending — add `HOPSWORKS_API_KEY` and re-run `train.py` |
-| GitHub Actions | Pending — push repo + add secrets |
-| Render / Streamlit deploy | Pending — see [DEPLOYMENT.md](DEPLOYMENT.md) |
 
 ### FastAPI on Render
 1. Push repo to GitHub

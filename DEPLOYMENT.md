@@ -2,6 +2,10 @@
 
 Follow these steps after the local code is working. Steps 3–8 require your accounts.
 
+> **Windows note:** `pip install hopsworks` may fail locally with `Failed building wheel for twofish`.
+> The app still works with `FEATURE_STORE=local`. Use **GitHub Actions (Linux)** for Hopsworks,
+> or install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and retry.
+
 ---
 
 ## Step 2 — Push to GitHub

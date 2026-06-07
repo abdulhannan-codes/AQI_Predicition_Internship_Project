@@ -8,6 +8,8 @@ and Streamlit dashboard.
 
 ---
 
+## Quick start (local)
+
 ```bash
 python -m pip install -r requirements-full.txt
 cp .env.example .env          # add OPENWEATHER_API_KEY, HOPSWORKS_API_KEY (optional)

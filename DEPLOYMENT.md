@@ -30,16 +30,21 @@ git push -u origin main
 ## Step 3 — API keys
 
 1. **OpenWeather:** https://openweathermap.org/api → free API key
-2. **Hopsworks:** https://www.hopsworks.ai/ → create project `pearls-aqi-predictor` → API keys
+2. **Hopsworks:** https://www.hopsworks.ai/
+   - Open your project (note the **exact name** in the top-left)
+   - **Project Settings → API Keys → Create**
+   - Scope must include **PROJECT** (create the key *inside* the project, not from account settings)
 
 Edit `.env`:
 
 ```
 OPENWEATHER_API_KEY=your_key_here
-HOPSWORKS_API_KEY=your_key_here
-HOPSWORKS_PROJECT=pearls-aqi-predictor
-FEATURE_STORE=hopsworks
+HOPSWORKS_API_KEY=your_project_scoped_key
+HOPSWORKS_PROJECT=YourExactProjectName
+FEATURE_STORE=local
 ```
+
+> CI error `Valid scope is: [PROJECT]` → create a new API key from **inside your Hopsworks project**.
 
 ---
 

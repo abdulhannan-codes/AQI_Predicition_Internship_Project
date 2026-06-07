@@ -36,47 +36,7 @@ class HopsworksStore:
             ) from exc
         return self._project
 
-    def _feature_group(self):
-        if self._fg is not None:
-            return self._fg
-
-        fs = self._connection().get_feature_store()
-        fg = None
-        try:
-            fg = fs.get_feature_group(name=FG_NAME, version=FG_VERSION)
-        except Exception:
-            fg = None
-
-        if fg is None:
-            schema = self._build_schema()
-            fg = fs.create_feature_group(
-                name=FG_NAME,
-                version=FG_VERSION,
-                description="Hourly AQI features for Lahore",
-                primary_key=["time"],
-                event_time="time",
-                features=schema,
-                online_enabled=False,
-            )
-
-        if fg is None:
-            raise RuntimeError(
-                f"Could not get or create feature group '{FG_NAME}' v{FG_VERSION}. "
-                "Check Hopsworks project permissions."
-            )
-
-        self._fg = fg
-        return self._fg
-
-    def _build_schema(self):
-        from hsfs.schema import Feature
-        features = [Feature(name="time", type="timestamp")]
-        for col in FEATURE_COLS:
-            features.append(Feature(name=col, type="float"))
-        return features
-
-    def save(self, df: pd.DataFrame, name: str = "features.parquet") -> pathlib.Path:
-        fg = self._feature_group()
+    def _prepare_frame(self, df: pd.DataFrame) -> pd.DataFrame:
         out = df.copy()
         if "time" not in out.columns:
             raise ValueError("Feature dataframe must include 'time' column")
@@ -85,21 +45,84 @@ class HopsworksStore:
         out = out[cols].dropna().reset_index(drop=True)
         if out.empty:
             raise ValueError("No complete feature rows to insert into Hopsworks")
-        fg.insert(out, write_options={"start_offline_backfill": True})
-        # Also mirror to local parquet for offline fallback
+        return out
+
+    def _feature_group(self, fs):
+        """Return a FeatureGroup handle; never None."""
+        if self._fg is not None:
+            return self._fg
+
+        fg = None
+        try:
+            fg = fs.get_feature_group(name=FG_NAME, version=FG_VERSION)
+        except Exception:
+            fg = None
+
+        if fg is None and hasattr(fs, "get_or_create_feature_group"):
+            fg = fs.get_or_create_feature_group(
+                name=FG_NAME,
+                version=FG_VERSION,
+                description="Hourly AQI features for Lahore",
+                primary_key=["time"],
+                event_time="time",
+                online_enabled=False,
+            )
+
+        if fg is None:
+            fg = fs.create_feature_group(
+                name=FG_NAME,
+                version=FG_VERSION,
+                description="Hourly AQI features for Lahore",
+                primary_key=["time"],
+                event_time="time",
+                online_enabled=False,
+            )
+
+        if fg is None:
+            raise RuntimeError(
+                f"Could not get or create feature group '{FG_NAME}' v{FG_VERSION}. "
+                "Check Hopsworks project permissions and API key PROJECT scope."
+            )
+
+        self._fg = fg
+        return self._fg
+
+    def save(self, df: pd.DataFrame, name: str = "features.parquet") -> pathlib.Path:
+        out = self._prepare_frame(df)
+
+        # Always mirror locally first
         local = pathlib.Path(__file__).resolve().parent.parent / "data" / name
         local.parent.mkdir(exist_ok=True)
         out.to_parquet(local, index=False)
+
+        fs = self._connection().get_feature_store()
+        fg = self._feature_group(fs)
+        if fg is None or not hasattr(fg, "insert"):
+            raise RuntimeError(
+                f"Invalid feature group object for '{FG_NAME}': {type(fg)} — "
+                "expected Hopsworks FeatureGroup with insert()."
+            )
+
+        print(f"Hopsworks: inserting {len(out)} rows into {FG_NAME} v{FG_VERSION}")
+        fg.insert(out)
         return local
 
     def load(self, name: str = "training_data.parquet") -> pd.DataFrame:
-        fg = self._feature_group()
+        fs = self._connection().get_feature_store()
+        fg = None
         try:
-            df = fg.read()
-            if isinstance(df, pd.DataFrame) and not df.empty:
-                return df
+            fg = fs.get_feature_group(name=FG_NAME, version=FG_VERSION)
         except Exception:
-            pass
+            fg = None
+
+        if fg is not None:
+            try:
+                df = fg.read()
+                if isinstance(df, pd.DataFrame) and not df.empty:
+                    return df
+            except Exception:
+                pass
+
         local = pathlib.Path(__file__).resolve().parent.parent / "data" / name
         if local.exists():
             return pd.read_parquet(local)

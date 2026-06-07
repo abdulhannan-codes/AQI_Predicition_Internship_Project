@@ -39,19 +39,33 @@ class HopsworksStore:
     def _feature_group(self):
         if self._fg is not None:
             return self._fg
+
         fs = self._connection().get_feature_store()
+        fg = None
         try:
-            self._fg = fs.get_feature_group(FG_NAME, version=FG_VERSION)
+            fg = fs.get_feature_group(name=FG_NAME, version=FG_VERSION)
         except Exception:
+            fg = None
+
+        if fg is None:
             schema = self._build_schema()
-            self._fg = fs.create_feature_group(
+            fg = fs.create_feature_group(
                 name=FG_NAME,
                 version=FG_VERSION,
                 description="Hourly AQI features for Lahore",
                 primary_key=["time"],
                 event_time="time",
                 features=schema,
+                online_enabled=False,
             )
+
+        if fg is None:
+            raise RuntimeError(
+                f"Could not get or create feature group '{FG_NAME}' v{FG_VERSION}. "
+                "Check Hopsworks project permissions."
+            )
+
+        self._fg = fg
         return self._fg
 
     def _build_schema(self):

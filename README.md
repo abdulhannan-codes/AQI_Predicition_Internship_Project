@@ -144,7 +144,9 @@ Quick summary:
 
 ### Streamlit Community Cloud
 1. Connect GitHub repo, main file `app.py`
-2. Add secret: `API_URL=https://your-render-app.onrender.com`
+2. Uses root `requirements.txt` (lightweight — no Hopsworks/TensorFlow)
+3. Leave `API_URL` empty for direct mode (models + data from repo)
+4. Optional secret: `OPENWEATHER_API_KEY`
 
 ---
 

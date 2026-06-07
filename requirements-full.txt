@@ -1,0 +1,6 @@
+# Full local dev + API + training (Windows: skip hopsworks if twofish fails)
+-r requirements.txt
+fastapi>=0.110
+uvicorn>=0.27
+tensorflow>=2.15
+hopsworks[python]==4.7.*

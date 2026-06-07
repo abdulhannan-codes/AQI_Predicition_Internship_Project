@@ -11,5 +11,5 @@ tensorflow>=2.15
 lime>=0.2.0
 fastapi>=0.110
 uvicorn>=0.27
-hopsworks>=4.0
+hopsworks==4.7.*
 python-dotenv>=1.0

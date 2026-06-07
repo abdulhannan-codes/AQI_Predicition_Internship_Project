@@ -22,9 +22,18 @@ class HopsworksStore:
         if self._project is not None:
             return self._project
         import hopsworks
-        api_key = os.environ["HOPSWORKS_API_KEY"]
+        api_key = os.environ.get("HOPSWORKS_API_KEY")
+        if not api_key:
+            raise ValueError("HOPSWORKS_API_KEY is not set")
         project_name = os.getenv("HOPSWORKS_PROJECT", "pearls-aqi-predictor")
-        self._project = hopsworks.login(api_key_value=api_key, project=project_name)
+        try:
+            self._project = hopsworks.login(api_key_value=api_key, project=project_name)
+        except Exception as exc:
+            raise RuntimeError(
+                f"Hopsworks login failed for project '{project_name}'. "
+                "Create the API key inside your project (Settings → API Keys) with PROJECT scope. "
+                f"Original error: {exc}"
+            ) from exc
         return self._project
 
     def _feature_group(self):

@@ -137,16 +137,19 @@ def train_all():
                   f"MAE={metrics['mae']:6.2f}  R2={metrics['r2']:.3f}")
 
         # TensorFlow (spec requirement)
-        tf_model = TensorFlowAQIModel()
-        tf_model.fit(Xtr, ytr)
-        tf_pred = tf_model.predict(Xte)
-        tf_metrics = evaluate(yte, tf_pred)
-        tf_path = MODELS_DIR / f"tensorflow_h{horizon}.pkl"
-        joblib.dump(tf_model, tf_path)
-        horizon_entry["models"]["tensorflow"] = {"path": tf_path.name, **tf_metrics}
-        results.append(("tensorflow", tf_metrics, tf_model))
-        print(f"{'tensorflow':20s}  RMSE={tf_metrics['rmse']:6.2f}  "
-              f"MAE={tf_metrics['mae']:6.2f}  R2={tf_metrics['r2']:.3f}")
+        try:
+            tf_model = TensorFlowAQIModel()
+            tf_model.fit(Xtr, ytr)
+            tf_pred = tf_model.predict(Xte)
+            tf_metrics = evaluate(yte, tf_pred)
+            tf_path = MODELS_DIR / f"tensorflow_h{horizon}.pkl"
+            joblib.dump(tf_model, tf_path)
+            horizon_entry["models"]["tensorflow"] = {"path": tf_path.name, **tf_metrics}
+            results.append(("tensorflow", tf_metrics, tf_model))
+            print(f"{'tensorflow':20s}  RMSE={tf_metrics['rmse']:6.2f}  "
+                  f"MAE={tf_metrics['mae']:6.2f}  R2={tf_metrics['r2']:.3f}")
+        except Exception as exc:
+            print(f"tensorflow skip: {exc}")
 
         # Best ML model must beat persistence; otherwise use persistence
         ml_results = [(n, m, mod) for n, m, mod in results if m["rmse"] < base_metrics["rmse"]]

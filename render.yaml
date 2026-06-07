@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: pearls-aqi-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: FEATURE_STORE
+        value: hopsworks
+      - key: OPENWEATHER_API_KEY
+        sync: false
+      - key: HOPSWORKS_API_KEY
+        sync: false
+      - key: HOPSWORKS_PROJECT
+        value: pearls-aqi-predictor

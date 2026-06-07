@@ -1,0 +1,43 @@
+name: Training Pipeline (daily)
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Backfill training data
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+          HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
+          FEATURE_STORE: hopsworks
+        run: python backfill.py 365
+      - name: Train + evaluate models
+        env:
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+          HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
+          FEATURE_STORE: hopsworks
+        run: python train.py
+      - name: Upload model registry artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-registry
+          path: |
+            models/registry.json
+            models/best_model_h24.pkl
+            models/best_model_h48.pkl
+            models/best_model_h72.pkl

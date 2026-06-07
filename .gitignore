@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+.env
+
+# Ignore incremental feature snapshots; keep training data + models for deploy
+data/features.parquet
+
+# Large optional training artifacts (best_model_h*.pkl + ridge_h*.pkl kept for serving/SHAP)
+models/random_forest*.pkl
+models/gradient_boosting*.pkl
+models/tensorflow_*.pkl
+models/best_model.pkl
+models/ridge.pkl

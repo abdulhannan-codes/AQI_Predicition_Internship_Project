@@ -147,7 +147,12 @@ Quick summary:
 1. Connect GitHub repo, main file `app.py`
 2. Uses root `requirements.txt` (lightweight — no Hopsworks/TensorFlow)
 3. Leave `API_URL` empty for direct mode (models + data from repo)
-4. Optional secret: `OPENWEATHER_API_KEY`
+4. **Secrets** (Manage app → Settings → Secrets) — paste:
+   ```toml
+   OPENWEATHER_API_KEY = "your_key_here"
+   ```
+   See [`.streamlit/secrets.toml.example`](.streamlit/secrets.toml.example)
+5. Reboot app after saving secrets — dashboard caption should show `Weather: openweather`
 
 ---
 

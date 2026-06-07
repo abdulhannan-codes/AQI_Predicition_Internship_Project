@@ -4,7 +4,7 @@ Uses FastAPI when API_URL is set; otherwise calls services/ directly.
 
 Run:  streamlit run app.py
 """
-from env_loader import load_env
+from env_loader import apply_streamlit_secrets, load_env
 
 load_env()
 
@@ -16,6 +16,8 @@ import pandas as pd
 import requests
 import streamlit as st
 from sklearn.pipeline import Pipeline
+
+apply_streamlit_secrets()
 
 import feature_pipeline as fp
 import models_def  # noqa: F401 — joblib unpickling

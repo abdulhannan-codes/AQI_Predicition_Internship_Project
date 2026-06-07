@@ -126,6 +126,17 @@ Quick summary:
 - API: `https://YOUR-APP.onrender.com`
 - Dashboard: `https://YOUR-APP.streamlit.app`
 
+### Local verification status (last run)
+
+| Check | Status |
+|---|---|
+| FastAPI `/forecast` | Pass (local) |
+| SHAP explainability | Pass |
+| Feature pipeline | Pass (`weather=openmeteo` until OpenWeather key set) |
+| Hopsworks registry | Pending — add `HOPSWORKS_API_KEY` and re-run `train.py` |
+| GitHub Actions | Pending — push repo + add secrets |
+| Render / Streamlit deploy | Pending — see [DEPLOYMENT.md](DEPLOYMENT.md) |
+
 ### FastAPI on Render
 1. Push repo to GitHub
 2. Create Web Service from `render.yaml`

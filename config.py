@@ -15,7 +15,6 @@ FEATURE_COLS = [
     "aqi_change_rate", "pm25_change_rate", "temp_humidity", "pm25_pm10_ratio",
 ]
 
-# Hopsworks bigint columns (time-derived integers / binary flags)
-FEATURE_INT_COLS = [
-    "hour", "day", "month", "dayofweek", "week_of_year", "is_weekend",
-]
+# Hopsworks dtype mapping (must match existing feature group schema)
+FEATURE_INT32_COLS = ["hour", "day", "month", "dayofweek", "week_of_year"]
+FEATURE_INT64_COLS = ["is_weekend"]  # bigint in Hopsworks

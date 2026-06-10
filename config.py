@@ -16,5 +16,5 @@ FEATURE_COLS = [
 ]
 
 # Hopsworks dtype mapping (must match existing feature group schema)
-FEATURE_INT32_COLS = ["hour", "day", "month", "dayofweek", "week_of_year"]
-FEATURE_INT64_COLS = ["is_weekend"]  # bigint in Hopsworks
+FEATURE_INT32_COLS = ["hour", "day", "month", "dayofweek"]
+FEATURE_INT64_COLS = ["week_of_year", "is_weekend"]  # bigint in Hopsworks

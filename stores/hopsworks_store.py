@@ -45,6 +45,10 @@ class HopsworksStore:
         out = out[cols].dropna().reset_index(drop=True)
         if out.empty:
             raise ValueError("No complete feature rows to insert into Hopsworks")
+        # Hopsworks schema uses float/double for all feature columns
+        for col in FEATURE_COLS:
+            if col in out.columns:
+                out[col] = pd.to_numeric(out[col], errors="coerce").astype("float64")
         return out
 
     def _feature_group(self, fs):

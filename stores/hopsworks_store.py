@@ -7,10 +7,12 @@ import tempfile
 import joblib
 import pandas as pd
 
-from config import FEATURE_COLS
+from config import FEATURE_COLS, FEATURE_INT_COLS
 
 FG_NAME = "aqi_features"
 FG_VERSION = 1
+
+FEATURE_INT_COLS_SET = set(FEATURE_INT_COLS)
 
 
 class HopsworksStore:
@@ -45,9 +47,13 @@ class HopsworksStore:
         out = out[cols].dropna().reset_index(drop=True)
         if out.empty:
             raise ValueError("No complete feature rows to insert into Hopsworks")
-        # Hopsworks schema uses float/double for all feature columns
+        # Match Hopsworks schema: bigint for time-derived ints, double for the rest
         for col in FEATURE_COLS:
-            if col in out.columns:
+            if col not in out.columns:
+                continue
+            if col in FEATURE_INT_COLS_SET:
+                out[col] = pd.to_numeric(out[col], errors="coerce").astype("int64")
+            else:
                 out[col] = pd.to_numeric(out[col], errors="coerce").astype("float64")
         return out
 
